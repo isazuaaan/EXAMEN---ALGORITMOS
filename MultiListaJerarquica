@@ -1,0 +1,52 @@
+import java.util.ArrayList;
+import java.util.List;
+
+class NodoCategoria {
+    String nombre;
+    List<NodoCategoria> subcategorias;
+    List<String> archivos;
+
+    public NodoCategoria(String nombre) {
+        this.nombre = nombre;
+        this.subcategorias = new ArrayList<>();
+        this.archivos = new ArrayList<>();
+    }
+
+    public void agregarSubcategoria(NodoCategoria subcategoria) {
+        subcategorias.add(subcategoria);
+    }
+
+    public void agregarArchivo(String archivo) {
+        archivos.add(archivo);
+    }
+
+    public void mostrarEstructura(String prefijo) {
+        System.out.println(prefijo + nombre);
+        for (String archivo : archivos) {
+            System.out.println(prefijo + "  - " + archivo);
+        }
+        for (NodoCategoria sub : subcategorias) {
+            sub.mostrarEstructura(prefijo + "    ");
+        }
+    }
+}
+
+public class MultilistaJerarquica {
+    public static void Main(String[] args) {
+        NodoCategoria raiz = new NodoCategoria("Documentos");
+        NodoCategoria categoria1 = new NodoCategoria("Informes");
+        NodoCategoria categoria2 = new NodoCategoria("Fotos");
+        
+        raiz.agregarSubcategoria(categoria1);
+        raiz.agregarSubcategoria(categoria2);
+        
+        categoria1.agregarArchivo("informe1.pdf");
+        categoria1.agregarArchivo("informe2.docx");
+        
+        categoria2.agregarArchivo("foto1.jpg");
+        categoria2.agregarArchivo("foto2.png");
+        
+        System.out.println("--- Vista Jerárquica del Sistema ---");
+        raiz.mostrarEstructura("");
+    }
+}
