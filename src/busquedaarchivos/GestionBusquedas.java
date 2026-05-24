@@ -1,0 +1,105 @@
+package BusquedaArchivos;
+
+import java.io.*;
+import java.util.*;
+
+public class GestionBusquedas {
+
+    private static Scanner sc = new Scanner(System.in);
+    public static void main(String[] args) {
+        int opcion = -1;
+        while (opcion != 0) {
+            System.out.println("\n--- SISTEMA DE GESTIÓN DE BÚSQUEDAS ---");
+            System.out.println("1. Secuencial por Bloques (registros.dat)");
+            System.out.println("2. Por Índices (datos.txt + indice.txt)");
+            System.out.println("3. Por Hashing Externo (ID % 10)");
+            System.out.println("0. Salir");
+            System.out.print("Seleccione una opción: ");
+            
+            try {
+                opcion = Integer.parseInt(sc.nextLine());
+                switch (opcion) {
+                    case 1 -> buscarBloques();
+                    case 2 -> buscarIndices();
+                    case 3 -> buscarHash();
+                    case 0 -> System.out.println("Saliendo...");
+                    default -> System.out.println("Opción no válida.");
+                }
+            } catch (Exception e) {
+                System.out.println("Error: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void buscarBloques() throws IOException {
+        System.out.print("ID a buscar (ej. 102): ");
+        String id = sc.nextLine();
+        try (RandomAccessFile raf = new RandomAccessFile("registros.dat", "r")) {
+            byte[] bloque = new byte[500];
+            while (raf.read(bloque) != -1) {
+                String contenidoBloque = new String(bloque);
+                // Dividimos el bloque manualmente cada 100 caracteres
+                for (int i = 0; i < 500; i += 100) {
+                    String registro = contenidoBloque.substring(i, i + 100).trim();
+                    if (registro.contains(id)) {
+                        System.out.println("¡ENCONTRADO!: " + registro);
+                        return;
+                    }
+                }
+            }
+            System.out.println("Registro no encontrado.");
+        }
+    }
+
+    private static void buscarIndices() throws IOException {
+        System.out.print("ID a buscar (A1, B2 o C3): ");
+        String id = sc.nextLine();
+        
+        Map<String, Long> mapaIndice = new HashMap<>();
+        File fIndice = new File("indice.txt");
+        
+        if (!fIndice.exists()) {
+            System.out.println("Error: No existe indice.txt. Ejecuta primero el Generador.");
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fIndice))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 2) {
+                    mapaIndice.put(partes[0], Long.parseLong(partes[1]));
+                }
+            }
+        }
+
+        if (mapaIndice.containsKey(id)) {
+            try (RandomAccessFile rafDatos = new RandomAccessFile("datos.txt", "r")) {
+                rafDatos.seek(mapaIndice.get(id));
+                String resultado = rafDatos.readLine();
+                System.out.println("RESULTADO: " + resultado.trim());
+            }
+        } else {
+            System.out.println("El ID no existe en el índice.");
+        }
+    }
+
+    private static void buscarHash() throws IOException {
+        System.out.print("ID numérico a buscar (100-109): ");
+        String id = sc.nextLine();
+        try {
+            int direccion = Integer.parseInt(id) % 10;
+            try (RandomAccessFile raf = new RandomAccessFile("registros.dat", "r")) {
+                raf.seek(direccion * 100);
+                String reg = raf.readLine(); // Leemos los 100 bytes del registro
+                if (reg != null && reg.contains(id)) {
+                    System.out.println("ENCONTRADO POR HASH (Directo): " + reg.trim());
+                } else {
+                    System.out.println("No se encontró nada en la posición calculada.");
+                }
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Error: El ID para Hash debe ser numérico.");
+        }
+    }
+} 
