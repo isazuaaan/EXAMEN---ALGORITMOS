@@ -1,0 +1,48 @@
+import java.util.*;
+
+public class listainvertidabusqueda {
+
+    private Map<String, List<String>> indice;
+
+    public listainvertidabusqueda() {
+        indice = new HashMap<>();
+    }
+
+    public void agregarReferencia(String palabra, String archivo) {
+        indice.putIfAbsent(palabra, new ArrayList<>());
+        if (!indice.get(palabra).contains(archivo)) {
+            indice.get(palabra).add(archivo);
+        }
+    }
+
+    public List<String> buscarPorPrefijo(String prefijo) {
+        List<String> resultados = new ArrayList<>();
+        for (String palabra : indice.keySet()) {
+            if (palabra.startsWith(prefijo)) {
+                resultados.addAll(indice.get(palabra));
+            }
+        }
+        return resultados;
+    }
+
+    public void mostrarIndice() {
+        for (Map.Entry<String, List<String>> entry : indice.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+
+    public static void main(String[] args) {
+        // Se actualizó el tipo de dato y el constructor a minúsculas
+        listainvertidabusqueda li = new listainvertidabusqueda();
+        li.agregarReferencia("perro", "archivo1.txt");
+        li.agregarReferencia("perrito", "archivo2.txt");
+        li.agregarReferencia("gato", "archivo3.txt");
+        li.agregarReferencia("perrera", "archivo4.txt");
+        
+        System.out.println("--- Contenido del Índice (Búsqueda por Prefijo) ---");
+        li.mostrarIndice();
+        
+        System.out.println("\n--- Resultado de Búsqueda por Prefijo 'perr' ---");
+        System.out.println("Resultados: " + li.buscarPorPrefijo("perr"));
+    }
+}
