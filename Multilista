@@ -1,0 +1,61 @@
+import java.util.*;
+
+class Nodo {
+    String nombreArchivo;
+    List<Nodo> referencias;
+
+    public Nodo(String nombreArchivo) {
+        this.nombreArchivo = nombreArchivo;
+        this.referencias = new ArrayList<>();
+    }
+
+    public void agregarReferencia(Nodo nodo) {
+        referencias.add(nodo);
+    }
+
+    public void mostrarReferencias() {
+        System.out.print(nombreArchivo + " -> ");
+        for (Nodo ref : referencias) {
+            System.out.print(ref.nombreArchivo + " ");
+        }
+        System.out.println();
+    }
+}
+
+// Se cambió "Multilista" a "multilistas" para coincidir con el archivo físico
+public class multilistas {
+    private List<Nodo> archivos;
+
+    // Nombre del constructor corregido
+    public multilistas() {
+        archivos = new ArrayList<>();
+    }
+
+    public Nodo agregarArchivo(String nombre) {
+        Nodo nuevo = new Nodo(nombre);
+        archivos.add(nuevo);
+        return nuevo;
+    }
+
+    public void mostrarEstructura() {
+        for (Nodo archivo : archivos) {
+            archivo.mostrarReferencias();
+        }
+    }
+
+    public static void main(String[] args) {
+        // Tipo de dato actualizado a la clase corregida
+        multilistas ml = new multilistas();
+        
+        Nodo a1 = ml.agregarArchivo("archivo1.txt");
+        Nodo a2 = ml.agregarArchivo("archivo2.txt");
+        Nodo a3 = ml.agregarArchivo("archivo3.txt");
+        
+        a1.agregarReferencia(a2);
+        a1.agregarReferencia(a3);
+        a2.agregarReferencia(a3);
+        
+        System.out.println("--- Estructura de la Multilista Básica ---");
+        ml.mostrarEstructura();
+    }
+}
