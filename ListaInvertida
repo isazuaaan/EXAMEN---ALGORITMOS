@@ -1,0 +1,41 @@
+import java.util.*;
+
+public class listainvertida {
+
+    private Map<String, List<String>> indice;
+
+    public listainvertida() {
+        indice = new HashMap<>(); 
+    }
+
+    public void agregarReferencia(String palabra, String archivo) {
+        indice.putIfAbsent(palabra, new ArrayList<>());
+        if (!indice.get(palabra).contains(archivo)) {
+            indice.get(palabra).add(archivo);
+        }
+    }
+
+    public List<String> buscar(String palabra) {
+        return indice.getOrDefault(palabra, new ArrayList<>());
+    }
+
+    public void mostrarIndice() {
+        for (Map.Entry<String, List<String>> entry : indice.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+
+    public static void main(String[] args) {
+        // Aquí también se cambió el tipo de dato al nombre de la clase corregida
+        listainvertida li = new listainvertida();
+        li.agregarReferencia("perro", "archivo1.txt");
+        li.agregarReferencia("gato", "archivo2.txt");
+        li.agregarReferencia("perro", "archivo3.txt");
+        
+        System.out.println("--- Contenido del Índice (Lista Invertida) ---");
+        li.mostrarIndice();
+        
+        System.out.println("\n--- Resultado de Búsqueda Exacta ---");
+        System.out.println("Búsqueda de 'perro': " + li.buscar("perro"));
+    }
+}
